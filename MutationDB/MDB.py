@@ -18,9 +18,10 @@ class MDB:
         plyvel.destroy_db(self.databasePath + '/mdbAnnotation')
         self.dbAnnotation = plyvel.DB(self.databasePath + '/mdbAnnotation', create_if_missing=True)
 
-    def importCodingAreaOfGenes(self, fileName, idColumn=0, chromosomeColumn=1, startColumn=2, endColumn=3,
-                                skipFirst=True):
-        logging.info('reading coding annotation data from %s', fileName)
+    def importAnnotatedRegionOfGenes(self, fileName, category, idColumn=0, chromosomeColumn=1, startColumn=2,
+                                     endColumn=3, skipFirst=True):
+        logging.info('reading {:s} annotation data from {:s}'.format(category, fileName))
+
         index = 0
 
         with open(fileName) as iFile:
@@ -37,13 +38,11 @@ class MDB:
                 mutationsInThisGene = self.findMutationsInRegion(chromosome, startOfGene, endOfGene)
 
                 if mutationsInThisGene is not None:
-                    key = MDB.geneIDToCodingKey(geneID)
-                    value = pickle.dumps(mutationsInThisGene)
-                    self.dbAnnotation.put(key.encode('utf-8'), value)
+                    key = MDB.geneIDToCategoryKey(geneID, category)
+                    MDB.appendListToKeyList(self.dbAnnotation, key, mutationsInThisGene)
 
                 if index % 1000 == 0:
                     logging.info('processed line {:d}'.format(index))
-
 
     @staticmethod
     def removeDotFromGeneName(geneName):
@@ -62,11 +61,11 @@ class MDB:
         result = pickle.loads(value)
         return result
 
-    def findMutationsInCodingAreaOfGene(self, geneID):
+    def findMutationsInAnnotatedAreaOfGene(self, geneID, category):
         if self.dbAnnotation is None:
             logging.info('annotation database is not open')
 
-        key = MDB.geneIDToCodingKey(geneID).encode('utf-8')
+        key = MDB.geneIDToCategoryKey(geneID, category).encode('utf-8')
         value = self.dbAnnotation.get(key)
         result = pickle.loads(value)
         return result
@@ -105,7 +104,8 @@ class MDB:
 
         fromKey = MDB.positionToString(chromosome, fromPosS).encode('utf-8')
         toKey = MDB.positionToString(chromosome, toPosS).encode('utf-8')
-        result = list(self.dbMS.iterator(start=fromKey, stop=toKey, include_value=False))
+        result = [x.decode('utf-8') for x in list(self.dbMS.iterator(start=fromKey, stop=toKey, include_value=False))]
+
         return result
 
     def importMutationFile(self, fileName):
@@ -172,12 +172,8 @@ class MDB:
         return
 
     @staticmethod
-    def geneIDToCodingKey(geneID):
-        return 'coding:{:s}'.format(MDB.removeDotFromGeneName(geneID))
-
-    @staticmethod
-    def geneIDToPromotorKey(geneID):
-        return 'promotor:{:s}'.format(MDB.removeDotFromGeneName(geneID))
+    def geneIDToCategoryKey(geneID, category):
+        return '{:s}:{:s}'.format(category, MDB.removeDotFromGeneName(geneID))
 
     @staticmethod
     def sampleToString(sampleID):
