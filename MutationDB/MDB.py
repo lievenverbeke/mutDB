@@ -53,24 +53,30 @@ class MDB:
             return geneName
 
     def findMutationsForSample(self, sampleID):
+        result=None
         if self.dbSM is None:
             logging.info('sample database is not open')
 
         key = MDB.sampleToString(sampleID).encode('utf-8')
         value = self.dbSM.get(key)
-        result = pickle.loads(value)
+
+        if value is not None:
+            result = pickle.loads(value)
         return result
 
     def findMutationsInAnnotatedAreaOfGene(self, geneID, category):
+        result=None
         if self.dbAnnotation is None:
             logging.info('annotation database is not open')
 
         key = MDB.geneIDToCategoryKey(geneID, category).encode('utf-8')
         value = self.dbAnnotation.get(key)
-        result = pickle.loads(value)
+        if value is not None:
+            result = pickle.loads(value)
         return result
 
     def findSamplesWithMutation(self, chromosome, pos):
+        result=None
         if self.dbMS is None:
             logging.info('sample database is not open')
 
@@ -78,7 +84,8 @@ class MDB:
 
         key = MDB.positionToString(chromosome, posS).encode('utf-8')
         value = self.dbMS.get(key)
-        result = pickle.loads(value)
+        if value is not None:
+            result = pickle.loads(value)
         return result
 
     def findSamplesWithMutationInRegion(self, chromosome, fromPos, toPos):
@@ -92,7 +99,8 @@ class MDB:
         toKey = MDB.positionToString(chromosome, toPosS).encode('utf-8')
         result = dict()
         for key, value in self.dbMS.iterator(start=fromKey, stop=toKey):
-            result[key.decode('utf-8')] = pickle.loads(value)
+            if value is not None:
+                result[key.decode('utf-8')] = pickle.loads(value)
         return result
 
     def findMutationsInRegion(self, chromosome, fromPos, toPos):
@@ -104,6 +112,7 @@ class MDB:
 
         fromKey = MDB.positionToString(chromosome, fromPosS).encode('utf-8')
         toKey = MDB.positionToString(chromosome, toPosS).encode('utf-8')
+
         result = [x.decode('utf-8') for x in list(self.dbMS.iterator(start=fromKey, stop=toKey, include_value=False))]
 
         return result
