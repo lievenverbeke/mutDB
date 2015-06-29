@@ -1,6 +1,6 @@
 from flask import Flask
-from MutationDB import RESTController
-from MutationDB import ResponseType
+from MutationDB.RESTController import RESTController
+from MutationDB.ResponseType import ResponseType
 import logging
 
 logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%d/%m/%Y %H:%M:%S', level=logging.DEBUG)
