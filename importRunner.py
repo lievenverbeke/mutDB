@@ -1,4 +1,4 @@
-from MutationDB import MDB
+from mutationdb import mdb
 import logging
 
 logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%d/%m/%Y %H:%M:%S', level=logging.DEBUG)
@@ -14,7 +14,7 @@ promotorAnnotationFileName='/home/share/data/annotated_mafs/expanded_promotors.t
 
 dbFolder='/home/share/data/annotated_mafs/'
 
-mutationDB=MDB(dbFolder)
+mutationDB=mdb(dbFolder)
 
 # mutationDB.importMutationFile(mutationFileName)
 # mutationDB.importMutationFile(tertFileName)

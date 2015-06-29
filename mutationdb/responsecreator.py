@@ -1,11 +1,11 @@
 __author__ = 'lverbeke'
 
 from flask import Response
-from MutationDB.ResponseType import ResponseType
+from mutationdb import responsetype
 
 
 def createResponse(items, responseType):
-    if responseType == ResponseType.PLAINTEXT:
+    if responseType == responsetype.PLAINTEXT:
         return plainTextResponse(items)
 
 def plainTextResponse(t):

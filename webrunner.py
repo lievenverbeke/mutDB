@@ -1,6 +1,6 @@
 from flask import Flask
-from MutationDB.RESTController import RESTController
-from MutationDB.ResponseType import ResponseType
+from mutationdb import RESTController
+from mutationdb import responsetype
 import logging
 
 logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%d/%m/%Y %H:%M:%S', level=logging.DEBUG)
@@ -15,7 +15,7 @@ def hello():
 
 @app.route('/mutations/<annotation>/<geneID>')
 def findMutationsForGene(geneID, annotation):
-    return controller.findMutationsForGene(geneID,annotation,ResponseType.PLAINTEXT)
+    return controller.findMutationsForGene(geneID,annotation,responsetype.PLAINTEXT)
 
 
 if __name__ == "__main__":

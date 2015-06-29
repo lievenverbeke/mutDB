@@ -1,6 +1,6 @@
 __author__ = 'lverbeke'
-from MutationDB.MDB import MDB
-import MutationDB.ResponseCreator
+from mutationdb.mdb import MDB
+from mutationdb import responsecreator
 import logging
 
 
@@ -20,7 +20,7 @@ class RESTController:
     def findMutationsForGene(self, geneID, annotation, responseType):
 
         if not annotation in {'all', 'coding', 'promotor'}:
-            return MutationDB.ResponseCreator.createResponse('invalid gene annotation', responseType)
+            return responsecreator.createResponse('invalid gene annotation', responseType)
 
         if annotation is None or annotation == '':
             annotation = 'all'
@@ -35,6 +35,6 @@ class RESTController:
 
         if result is not None:
             result = set(result)
-            return MutationDB.ResponseCreator.createResponse('\n'.join(result), responseType)
+            return responsecreator.createResponse('\n'.join(result), responseType)
         else:
-            return MutationDB.ResponseCreator.createResponse('no results found', responseType)
+            return responsecreator.createResponse('no results found', responseType)
